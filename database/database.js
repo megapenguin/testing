@@ -5,11 +5,11 @@ let instance = null;
 switch (process.env.NODE_ENV) {
   case "production":
     instance = new Sequelize(
-      "users",
-      "root",
-      " ",
+      "heroku_0beac5ae13c3a7c",
+      "b30994893ce22f",
+      "e0dc9c73",
       {
-        host: "localhost",
+        host: "us-cdbr-east-03.cleardb.com/heroku_0beac5ae13c3a7c",
         dialect: "mysql",
         logging: false,
         port: 3306,
