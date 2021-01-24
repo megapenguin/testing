@@ -9,7 +9,7 @@ switch (process.env.NODE_ENV) {
       "b30994893ce22f",
       "e0dc9c73",
       {
-        host: "us-cdbr-east-03.cleardb.com/heroku_0beac5ae13c3a7c",
+        host: "us-cdbr-east-03.cleardb.com",
         dialect: "mysql",
         logging: false,
         port: 3306,
