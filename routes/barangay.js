@@ -72,6 +72,13 @@ router.post("/search_barangays", (req, res) => {
         },
       ],
     },
+    include: [
+      {
+        model: Image,
+        where: { imageReferenceId: BAR_REF },
+        required: false,
+      },
+    ],
   })
     .then((_res) => {
       res.json(_res);
