@@ -88,11 +88,12 @@ router.post("/search_drivers", (req, res) => {
         },
       ],
     },
-    attributes: {
-      exclude: ["generatePassword"],
-    },
+
     include: [
       {
+        attributes: {
+          exclude: ["generatePassword"],
+        },
         model: JeepneyDriver,
         include: [{ model: Jeepney }],
       },
