@@ -49,6 +49,9 @@ router.post("/search_drivers", (req, res) => {
   let { value } = req.body;
 
   Driver.findAll({
+    attributes: {
+      exclude: ["generatePassword"],
+    },
     where: {
       [Op.or]: [
         {
@@ -91,9 +94,6 @@ router.post("/search_drivers", (req, res) => {
 
     include: [
       {
-        attributes: {
-          exclude: ["generatePassword"],
-        },
         model: JeepneyDriver,
         include: [{ model: Jeepney }],
       },
