@@ -34,7 +34,11 @@ router.get("/", (req, res) => {
 
 router.get("/search_all_drivers", (req, res) => {
   //SELECT * FROM users
-  Driver.findAll({ exclude: ["generatePassword"] })
+  Driver.findAll({
+    attributes: {
+      exclude: ["generatePassword"],
+    },
+  })
     .then((response) => {
       res.json(response);
     })
@@ -83,6 +87,9 @@ router.post("/search_drivers", (req, res) => {
           },
         },
       ],
+    },
+    attributes: {
+      exclude: ["generatePassword"],
     },
     include: [
       {
