@@ -49,9 +49,6 @@ router.post("/search_drivers", (req, res) => {
   let { value } = req.body;
 
   Driver.findAll({
-    attributes: {
-      exclude: ["generatePassword"],
-    },
     where: {
       [Op.or]: [
         {
