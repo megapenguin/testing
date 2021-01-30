@@ -21,6 +21,40 @@ router.post("/add_jeepney_driver", (req, res) => {
     })
     .catch((error) => console.log(error));
 });
+router.post("/search_jeepneys", (req, res) => {
+  let { value } = req.body;
+
+  Jeepney.findAll({
+    where: {
+      [Op.or]: [
+        {
+          id: {
+            [Op.like]: value,
+          },
+        },
+        {
+          barangayId: {
+            [Op.like]: "%" + value + "%",
+          },
+        },
+        {
+          plateNumber: {
+            [Op.like]: "%" + value + "%",
+          },
+        },
+        {
+          jeepCapacity: {
+            [Op.like]: "%" + value + "%",
+          },
+        },
+      ],
+    },
+  })
+    .then((_res) => {
+      res.json(_res);
+    })
+    .catch((error) => console.log(error));
+});
 
 router.delete("/delete_jeepney_driver", (req, res) => {
   let { id } = req.query;
