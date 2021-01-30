@@ -3,6 +3,7 @@ const Jeepney = require("../models/Jeepney");
 
 const JeepneyDriver = require("../models/JeepneyDriver");
 const Driver = require("../models/Driver");
+const Barangay = require("../models/Barangay");
 
 router.get("/", (req, res) => {
   Jeepney.hasMany(JeepneyDriver, { foreignKey: "jeepneyId" });
