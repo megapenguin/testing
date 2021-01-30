@@ -1,6 +1,7 @@
 const router = require("express").Router();
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 const Jeepney = require("../models/Jeepney");
-
 const JeepneyDriver = require("../models/JeepneyDriver");
 const Driver = require("../models/Driver");
 const Barangay = require("../models/Barangay");
@@ -37,16 +38,6 @@ router.get("/", (req, res) => {
     .catch((error) => console.log(error));
 });
 
-router.get("/search_all_jeepneys", (req, res) => {
-  //SELECT * FROM users
-  Jeepney.findAll()
-    .then((response) => {
-      console.log(response);
-      res.json(response);
-    })
-    .catch((error) => console.log(error));
-});
-
 router.post("/search_jeepneys", (req, res) => {
   let { value } = req.body;
 
@@ -78,6 +69,16 @@ router.post("/search_jeepneys", (req, res) => {
   })
     .then((_res) => {
       res.json(_res);
+    })
+    .catch((error) => console.log(error));
+});
+
+router.get("/search_all_jeepneys", (req, res) => {
+  //SELECT * FROM users
+  Jeepney.findAll()
+    .then((response) => {
+      console.log(response);
+      res.json(response);
     })
     .catch((error) => console.log(error));
 });
