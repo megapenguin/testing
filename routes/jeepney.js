@@ -47,6 +47,41 @@ router.get("/search_all_jeepneys", (req, res) => {
     .catch((error) => console.log(error));
 });
 
+router.post("/search_jeepneys", (req, res) => {
+  let { value } = req.body;
+
+  Jeepney.findAll({
+    where: {
+      [Op.or]: [
+        {
+          id: {
+            [Op.like]: value,
+          },
+        },
+        {
+          barangayId: {
+            [Op.like]: "%" + value + "%",
+          },
+        },
+        {
+          plateNumber: {
+            [Op.like]: "%" + value + "%",
+          },
+        },
+        {
+          jeepCapacity: {
+            [Op.like]: "%" + value + "%",
+          },
+        },
+      ],
+    },
+  })
+    .then((_res) => {
+      res.json(_res);
+    })
+    .catch((error) => console.log(error));
+});
+
 router.post("/add_jeep", (req, res) => {
   console.log("add to jeep table");
   let { barangayId, plateNumber, jeepCapacity } = req.body;
