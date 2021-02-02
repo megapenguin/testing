@@ -119,4 +119,15 @@ router.delete("/delete_jeep", (req, res) => {
     .catch((error) => console.log(error));
 });
 
+router.post("/update_jeepney", (req, res) => {
+  let { id, plateNumber, jeepCapacity } = req.body;
+  console.log(req.body);
+
+  Jeepney.update({ plateNumber, jeepCapacity }, { where: { id } })
+    .then((_res) => {
+      res.json(_res);
+    })
+    .catch((error) => console.log(error));
+});
+
 module.exports = router;
