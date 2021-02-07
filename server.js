@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const fileUpload = require("express-fileupload");
-
+const path = require("path");
 const db = require("./database/database");
 
 require("dotenv").config();
