@@ -118,7 +118,6 @@ router.delete("/delete_jeep", (req, res) => {
     })
     .catch((error) => console.log(error));
 });
-
 router.post("/update_jeepney", (req, res) => {
   let { id, plateNumber, jeepCapacity } = req.body;
   console.log(req.body);

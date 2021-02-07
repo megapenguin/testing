@@ -13,7 +13,6 @@ Driver.hasMany(JeepneyDriver, { foreignKey: "driverId" });
 JeepneyDriver.belongsTo(Driver, { foreignKey: "driverId" });
 Jeepney.hasMany(JeepneyDriver, { foreignKey: "jeepneyId" });
 JeepneyDriver.belongsTo(Jeepney, { foreignKey: "jeepneyId" });
-
 router.get("/", (req, res) => {
   Driver.findAll({
     attributes: {
@@ -34,11 +33,7 @@ router.get("/", (req, res) => {
 
 router.get("/search_all_drivers", (req, res) => {
   //SELECT * FROM users
-  Driver.findAll({
-    attributes: {
-      exclude: ["generatePassword"],
-    },
-  })
+  Driver.findAll({ exclude: ["generatePassword"] })
     .then((response) => {
       res.json(response);
     })
@@ -49,6 +44,9 @@ router.post("/search_drivers", (req, res) => {
   let { value } = req.body;
 
   Driver.findAll({
+    attributes: {
+      exclude: ["generatePassword"],
+    },
     where: {
       [Op.or]: [
         {
@@ -88,7 +86,6 @@ router.post("/search_drivers", (req, res) => {
         },
       ],
     },
-
     include: [
       {
         model: JeepneyDriver,

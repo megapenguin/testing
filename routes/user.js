@@ -15,9 +15,9 @@ router.get("/", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-  let { password } = req.body;
+  let { userName, password } = req.body;
 
-  User.findOne({ where: { password } })
+  User.findOne({ where: { userName, password } })
 
     .then((_res) => {
       if (_res) {
@@ -25,7 +25,7 @@ router.post("/login", (req, res) => {
           id,
           firstName,
           lastName,
-
+          userName,
           email,
           password,
         } = _res.dataValues;
@@ -33,7 +33,7 @@ router.post("/login", (req, res) => {
           id,
           firstName,
           lastName,
-
+          userName,
           email,
           password,
         });
@@ -48,27 +48,42 @@ router.post("/login", (req, res) => {
 
 router.post("/register", (req, res) => {
   let { id } = req.query;
-  let { firstName, lastName, email, password } = req.body;
+  let { provider, firstName, lastName, email, password } = req.body;
 
-  bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash(password, salt, function (err, hash) {
-      // Store hash in your password DB.
-      if (err) return res.sendStatus(500);
-
-      User.create({
-        firstName,
-        lastName,
-
-        email,
-        password: hash,
+  if (provider != "normal") {
+    User.create({
+      provider,
+      firstName,
+      lastName,
+      email,
+      password: "",
+    })
+      .then((_res) => {
+        res.json(_res);
+        //console.log(_res)
       })
-        .then((_res) => {
-          res.json(_res);
-          //console.log(_res)
+      .catch((error) => console.log(error));
+  } else {
+    bcrypt.genSalt(10, function (err, salt) {
+      bcrypt.hash(password, salt, function (err, hash) {
+        // Store hash in your password DB.
+        if (err) return res.sendStatus(500);
+
+        User.create({
+          provider,
+          firstName,
+          lastName,
+          email,
+          password: hash,
         })
-        .catch((error) => console.log(error));
+          .then((_res) => {
+            res.json(_res);
+            //console.log(_res)
+          })
+          .catch((error) => console.log(error));
+      });
     });
-  });
+  }
 });
 
 router.delete("/delete_user", (req, res) => {
