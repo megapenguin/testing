@@ -3,6 +3,16 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Admin = require("../models/Admin");
 const bcrypt = require("bcrypt");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
+
+const Image = require("../models/Image");
+const Driver = require("../models/Driver");
+const Jeepney = require("../models/Jeepney");
+const JeepneyDriver = require("../models/JeepneyDriver");
+
+User.hasMany(Image, { foreignKey: "imageOwnerId" });
+Image.belongsTo(User, { foreignKey: "imageOwnerId" });
 
 router.post("/", validateToken, (req, res) => {
   let decode = req.decode;
@@ -15,9 +25,23 @@ router.post("/", validateToken, (req, res) => {
 });
 
 router.post("/auth_driver_login", (req, res) => {
+  Driver.hasMany(JeepneyDriver, { foreignKey: "driverId" });
+  JeepneyDriver.belongsTo(Driver, { foreignKey: "driverId" });
+  Jeepney.hasMany(JeepneyDriver, { foreignKey: "jeepneyId" });
+  JeepneyDriver.belongsTo(Jeepney, { foreignKey: "jeepneyId" });
+
   let { email, generatePassword } = req.body;
-  console.log("auth part");
-  Driver.findOne({ where: { email } }).then((user) => {
+  console.log("auth part driver");
+  Driver.findOne({
+    where: { email },
+    include: [
+      {
+        model: JeepneyDriver,
+        required: false,
+        include: [{ model: Jeepney, required: false }],
+      },
+    ],
+  }).then((user) => {
     if (user === null) return res.sendStatus(422);
     // console.log(user)
 
@@ -37,6 +61,7 @@ router.post("/auth_driver_login", (req, res) => {
         contactNumber: user.contactNumber,
         email: user.email,
         myStatus,
+        assignedJeep: user.jeepneydrivers,
       };
       //console.log(userPayload)
       let token = jwt.sign(userPayload, process.env.PUBLIC_KEY, {
@@ -85,22 +110,26 @@ router.post("/auth_driver_login", (req, res) => {
 
 router.post("/auth_login", (req, res) => {
   let { provider, email, password } = req.body;
-  console.log("auth part");
+
   // let where = hasProvider ? {where: {email, provider}} : {where: {email}}
-  let where =
-    provider !== "normal"
-      ? { where: { email, provider } }
-      : { where: { email } };
-  User.findOne({ ...where }).then((user) => {
-    if (user === null) return res.sendStatus(422);
-    // console.log(user)
-
-    bcrypt.compare(password, user.password, (err, status) => {
-      // console.log(err, status)
-
-      if (status === false) return res.sendStatus(422);
-      //dahil kailangan mo ng id sa code mo ipasa narin natin ang id
-
+  // let where =
+  //   provider !== "normal"
+  //     ? { where: { email, provider } }
+  //     : { where: { email } };
+  if (provider != "normal") {
+    User.findOne({
+      where: { email, provider },
+      include: [
+        {
+          model: Image,
+          where: { imageReferenceId: 4 },
+          required: false,
+        },
+      ],
+    }).then((user) => {
+      console.log("auth part");
+      if (user === null) return res.sendStatus(422);
+      // console.log(user)
       let userPayload = {
         id: user.id,
         provider: user.provider,
@@ -108,6 +137,7 @@ router.post("/auth_login", (req, res) => {
         lastName: user.lastName,
         email: user.email,
         myStatus: "user",
+        image: user.images,
       };
       //console.log(userPayload)
       let token = jwt.sign(userPayload, process.env.PUBLIC_KEY, {
@@ -126,7 +156,54 @@ router.post("/auth_login", (req, res) => {
         res.json({ token, userData: userPayload, secureToken });
       });
     });
-  });
+  } else {
+    User.findOne({
+      where: { email },
+      include: [
+        {
+          model: Image,
+          where: { imageReferenceId: 4 },
+          required: false,
+        },
+      ],
+    }).then((user) => {
+      if (user === null) return res.sendStatus(422);
+      // console.log(user)
+
+      bcrypt.compare(password, user.password, (err, status) => {
+        // console.log(err, status)
+
+        if (status === false) return res.sendStatus(422);
+        //dahil kailangan mo ng id sa code mo ipasa narin natin ang id
+
+        let userPayload = {
+          id: user.id,
+          provider: user.provider,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          myStatus: "user",
+          image: user.images,
+        };
+        //console.log(userPayload)
+        let token = jwt.sign(userPayload, process.env.PUBLIC_KEY, {
+          expiresIn: "8h",
+        });
+        jwt.verify(token, process.env.PUBLIC_KEY, (error, decode) => {
+          if (error) {
+            console.log(error);
+            return res.sendStatus(403);
+          }
+
+          let secureToken = jwt.sign({ decode }, process.env.PRIVATE_KEY, {
+            expiresIn: "15m",
+            algorithm: "HS256",
+          });
+          res.json({ token, userData: userPayload, secureToken });
+        });
+      });
+    });
+  }
 });
 
 router.post("/auth_admin_login", (req, res) => {
