@@ -42,6 +42,7 @@ const Driver = db.define("drivers", {
   email: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true,
   },
 
   createdAt: {
