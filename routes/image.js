@@ -76,57 +76,54 @@ router.post("/add_image", (req, res) => {
   const randomFileName = randomString.generate(15);
   const splitFile = file.name.split(".");
   let inputBuffer = Buffer.from(file.data, "base64");
-  try {
-    sharp(inputBuffer)
-      .resize(1200, 445)
-      .png({ compressionLevel: 9, adaptiveFiltering: true, force: true })
-      .toFile(
-        `${__dirname}/../public/images/${randomFileName}-lg.${splitFile[1]}`,
-        (err, info) => {
-          if (err) throw err;
 
-          sharp(inputBuffer)
-            .resize(640, 320)
-            .png({ compressionLevel: 9, adaptiveFiltering: true, force: true })
-            .toFile(
-              `${__dirname}/../public/images/${randomFileName}-md.${splitFile[1]}`,
-              (err, info) => {
-                if (err) throw err;
-                sharp(inputBuffer)
-                  .resize(200, 100)
-                  .png({
-                    compressionLevel: 9,
-                    adaptiveFiltering: true,
-                    force: true,
-                  })
-                  .toFile(
-                    `${__dirname}/../public/images/${randomFileName}-sm.${splitFile[1]}`,
-                    (err, info) => {
-                      if (err) throw err;
-                      console.log(info);
-                      const imagePath = `${randomFileName}-lg.${splitFile[1]}`;
-                      const smImagePath = `${randomFileName}-sm.${splitFile[1]}`;
-                      const mdImagePath = `${randomFileName}-md.${splitFile[1]}`;
-                      Image.create({
-                        imageOwnerId,
-                        imageReferenceId,
-                        imagePath,
-                        smImagePath,
-                        mdImagePath,
+  sharp(inputBuffer)
+    .resize(1200, 445)
+    .png({ compressionLevel: 9, adaptiveFiltering: true, force: true })
+    .toFile(
+      `${__dirname}/../public/images/${randomFileName}-lg.${splitFile[1]}`,
+      (err, info) => {
+        if (err) throw err;
+
+        sharp(inputBuffer)
+          .resize(640, 320)
+          .png({ compressionLevel: 9, adaptiveFiltering: true, force: true })
+          .toFile(
+            `${__dirname}/../public/images/${randomFileName}-md.${splitFile[1]}`,
+            (err, info) => {
+              if (err) throw err;
+              sharp(inputBuffer)
+                .resize(200, 100)
+                .png({
+                  compressionLevel: 9,
+                  adaptiveFiltering: true,
+                  force: true,
+                })
+                .toFile(
+                  `${__dirname}/../public/images/${randomFileName}-sm.${splitFile[1]}`,
+                  (err, info) => {
+                    if (err) throw err;
+                    console.log(info);
+                    const imagePath = `${randomFileName}-lg.${splitFile[1]}`;
+                    const smImagePath = `${randomFileName}-sm.${splitFile[1]}`;
+                    const mdImagePath = `${randomFileName}-md.${splitFile[1]}`;
+                    Image.create({
+                      imageOwnerId,
+                      imageReferenceId,
+                      imagePath,
+                      smImagePath,
+                      mdImagePath,
+                    })
+                      .then((response) => {
+                        res.json(response);
                       })
-                        .then((response) => {
-                          res.json(response);
-                        })
-                        .catch((error) => console.log(error));
-                    }
-                  );
-              }
-            );
-        }
-      );
-  } catch (err) {
-    console.log(err);
-  }
+                      .catch((error) => console.log(error));
+                  }
+                );
+            }
+          );
+      }
+    );
 
   // file.mv(
   //   `${__dirname}/../public/images/${randomFileName}.${splitFile[1]}`,
