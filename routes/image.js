@@ -79,7 +79,7 @@ router.post("/add_image", (req, res) => {
   console.log("file data", file.data);
   try {
     sharp(file.data)
-      .resize(1200, 445)
+      .resize(1000, 445)
       .png({ compressionLevel: 9, adaptiveFiltering: true, force: true })
       .toFile(
         `${__dirname}/../public/images/${randomFileName}-lg.${splitFile[1]}`,
