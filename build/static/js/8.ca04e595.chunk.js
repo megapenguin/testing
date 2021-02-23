@@ -1,2 +1,0 @@
-(this["webpackJsonpretrack-admin"]=this["webpackJsonpretrack-admin"]||[]).push([[8],{485:function(e,t,c){"use strict";c.r(t);var n=c(4);c(0);t.default=function(){return Object(n.jsx)("div",{children:"Welcome"})}}}]);
-//# sourceMappingURL=8.ca04e595.chunk.js.map
